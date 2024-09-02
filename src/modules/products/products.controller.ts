@@ -8,6 +8,7 @@ import {
   Delete,
   Req,
   Res,
+  Put,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -163,7 +164,7 @@ export class ProductsController {
       );
     }
   }
-  @Delete(':id')
+  @Put(':id')
   @ApiOperation({
     summary: 'elimina un recurso ',
     description:

@@ -40,7 +40,12 @@ export class ProvidersService {
 
   async findAll(findProviderDto: FindProviderDto): Promise<Provider[]> {
     try {
-      const resp = await this.providersRepository.findBy(findProviderDto);
+      const resp = await this.providersRepository.find(
+        {
+          where: {...findProviderDto },
+          relations: ['product'],
+        }
+      );
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -60,7 +65,10 @@ export class ProvidersService {
 
   async findOne(findProviderDto: FindProviderDto) {
     try {
-      const resp = await this.providersRepository.findOneBy(findProviderDto);
+      const resp = await this.providersRepository.findOne({
+        where: { ...findProviderDto },  // Aplicando los criterios del DTO
+        relations: ['product'],         // Incluyendo los productos asociados
+      });
       return resp;
     } catch (error) {
       throw new HttpException(

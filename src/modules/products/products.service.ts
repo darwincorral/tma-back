@@ -10,14 +10,14 @@ import { Repository } from 'typeorm';
 export class ProductsService {
   constructor(
     @Inject('PRODUCT_REPOSITORY')
-    private deliveryRepository: Repository<Product>,
+    private productRepository: Repository<Product>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     try {
       const objTransporteDto =
-        await this.deliveryRepository.create(createProductDto);
-      const resp = await this.deliveryRepository.save({
+        await this.productRepository.create(createProductDto);
+      const resp = await this.productRepository.save({
         ...objTransporteDto,
         objTransporteDto,
       });
@@ -39,8 +39,8 @@ export class ProductsService {
   }
 
   async findAll(findProductDto: FindProductDto): Promise<Product[]> {
-    try {
-      const resp = await this.deliveryRepository.findBy(findProductDto);
+    try {      
+      const resp = await this.productRepository.findBy(findProductDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -60,7 +60,7 @@ export class ProductsService {
 
   async findOne(findProductDto: FindProductDto) {
     try {
-      const resp = await this.deliveryRepository.findOneBy(findProductDto);
+      const resp = await this.productRepository.findOneBy(findProductDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -80,7 +80,7 @@ export class ProductsService {
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     try {
-      const resp = await this.deliveryRepository.update(id, updateProductDto);
+      const resp = await this.productRepository.update(id, updateProductDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -100,12 +100,12 @@ export class ProductsService {
 
   async remove(id: number, updateProductDto: UpdateProductDto) {
     try {
-      const respUpdate = await this.deliveryRepository.update(
+      const respUpdate = await this.productRepository.update(
         id,
         updateProductDto,
       );
 
-      const resp = await this.deliveryRepository.softDelete(id);
+      const resp = await this.productRepository.softDelete(id);
 
       return resp;
     } catch (error) {

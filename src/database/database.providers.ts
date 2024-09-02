@@ -8,9 +8,9 @@ export const databaseProviders = [
       const dataSource = new DataSource({
         type: 'mysql',
         host: 'localhost',
-        port: 3307,
+        port: 3306,
         username: 'root',
-        password: '12345',
+        password: 'root',
         database: 'db_transportes',
         entities: [
             __dirname + '/../**/*.entity{.ts,.js}',

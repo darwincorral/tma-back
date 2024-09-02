@@ -1,4 +1,4 @@
-import {Controller,Get,Post,Body,Patch,Param,Delete,Req,Res} from '@nestjs/common';
+import {Controller,Get,Post,Body,Patch,Param,Delete,Req,Res, Put} from '@nestjs/common';
 import { LoggerService } from 'src/util/util.logger';
 import { ApiBody, ApiCreatedResponse, ApiHeader, ApiOperation,ApiParam,ApiQuery,ApiTags,} from '@nestjs/swagger';
 import { errorResponse, successResponse } from 'src/network/responseApi';
@@ -149,7 +149,7 @@ export class PersonasController {
       );
     }
   }
-  @Delete(':id')
+  @Put()
   @ApiOperation({
     summary: 'elimina un recurso ',
     description:
@@ -162,11 +162,10 @@ export class PersonasController {
   async remove(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
     @Body() updatePersonasDto: UpdatePersonasDto,
   ) {
     try {
-      const resp = await this.personasService.remove(+id, updatePersonasDto);
+      const resp = await this.personasService.remove(updatePersonasDto);
       return successResponse(req, res, 200, 0, 0, 'exito', resp);
     } catch (error) {
       return errorResponse(

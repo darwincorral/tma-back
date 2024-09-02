@@ -95,14 +95,14 @@ export class PersonasService {
     }
   }
 
-  async remove(id: number, updatePersonasDto: UpdatePersonasDto) {
+  async remove(updatePersonasDto: UpdatePersonasDto) {
     try {
       const respUpdate = await this.personaRepository.update(
-        id,
+        updatePersonasDto.id,
         updatePersonasDto,
       );
 
-      const resp = await this.personaRepository.softDelete(id);
+      const resp = await this.personaRepository.softDelete(updatePersonasDto.id);
 
       return resp;
     } catch (error) {

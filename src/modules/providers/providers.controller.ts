@@ -25,7 +25,7 @@ import { ErrorMessage } from 'src/configuration/error-messages';
 import { FindProviderDto } from './dto/find-provider.dto';
 
 const newLog = new LoggerService();
-@ApiTags('productos')
+@ApiTags('providers')
 @Controller('providers')
 export class ProvidersController {
   constructor(private readonly providersService: ProvidersService) {}
