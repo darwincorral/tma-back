@@ -9,6 +9,9 @@ export class CreateRouteDto {
   })
   hour: string;
   @IsString()
+  @ApiProperty({ example: 'TENA ECUADOR', description: 'Location' })
+  location: string;
+  @IsString()
   @ApiProperty({
     example: 'LATITUD',
     description: 'LATITUD',
@@ -22,7 +25,13 @@ export class CreateRouteDto {
   length: string;
   @IsString()
   @ApiProperty({
-    example: 'USAURIO',
+    example: 'INICIO',
+    description: 'TIPO DE VIAJE',
+  })
+  type: string;
+  @IsString()
+  @ApiProperty({
+    example: 'IRAMIREZ',
     description: 'USAURIO CREA',
   })
   userCreated: string;

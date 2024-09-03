@@ -21,16 +21,6 @@ export class DeliveryDetails {
   cost: string;
   @Column()
   discount: number;
-  @Column({ type: 'time' })
-  startTime: string;
-  @Column()
-  endTime: string;
-  @Column()
-  location: string;
-  @Column()
-  latitude: string;
-  @Column()
-  length: string;
   @Column()
   rating: string;
   @Column({ default: 'ACT' })

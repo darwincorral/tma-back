@@ -24,7 +24,7 @@ import { errorResponse, successResponse } from 'src/network/responseApi';
 import { ErrorMessage } from 'src/configuration/error-messages';
 import { FindDeliveryDto } from './dto/find-delivery.dto';
 const newLog = new LoggerService();
-@ApiTags('vehiculo')
+@ApiTags('entregas')
 @Controller('deliveries')
 export class DeliveriesController {
   constructor(private readonly deliveriesService: DeliveriesService) {}
@@ -188,6 +188,36 @@ export class DeliveriesController {
         error.response.codRetorno || ErrorMessage.ERROR_CONTROLLER.codRetorno,
         error.status || ErrorMessage.ERROR_CONTROLLER.status,
         error.response.message || ErrorMessage.ERROR_CONTROLLER.message,
+        {},
+      );
+    }
+  }
+
+  @Post('/createDelivery')
+  @ApiOperation({
+    summary: 'Crea un recurso con listas',
+    description:
+      'Este endpoint permite crear un recurso del tipo delivery.',
+  })
+  @ApiCreatedResponse({
+    description: 'Recurso creado exitosamente.',
+    type: CreateDeliveryDto, // Sustituye YourResourceDTO por el tipo de tu DTO
+  })
+  async createDelivery(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createDeliveryDto: CreateDeliveryDto
+  ) {
+    try {
+      const delivery = await this.deliveriesService.createDelivery(createDeliveryDto);
+      return successResponse(req, res, 201, 1, 1, 'Delivery created successfully', delivery);
+    } catch (error) {
+      return errorResponse(
+        req,
+        res,
+        error.response?.codRetorno || ErrorMessage.ERROR_CONTROLLER.codRetorno,
+        error.status || ErrorMessage.ERROR_CONTROLLER.status,
+        error.response?.message || ErrorMessage.ERROR_CONTROLLER.message,
         {},
       );
     }

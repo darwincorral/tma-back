@@ -1,37 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import { CreateDeliveryDetailsDto } from 'src/modules/detalles-entregas/dto/create-detalles-entregas.dto';
 
 export class CreateDeliveryDto {
   @IsString()
+  @IsOptional()
   @ApiProperty({
     example: 'ABCD123456',
     description: 'CODIGO DE ENTRADA',
   })
   code: string;
-  @IsString()
-  @ApiProperty({
-    example: '2023-10-26',
-    description: 'FECHA DE ENTREGA',
-  })
-  deliveryDate: string;
-  @IsString()
-  @ApiProperty({
-    example: 'ABCD123456',
-    description: 'CODIGO DE ENTRADA',
-  })
-  shippingCost: string;
-  @IsString()
-  @ApiProperty({
-    example: '10',
-    description: 'IMPUESTO',
-  })
-  tax: string;
-  @IsString()
-  @ApiProperty({
-    example: '20,30',
-    description: 'TOTAL',
-  })
-  total: string;
   @IsString()
   @ApiProperty({
     example: 'EFECTIVO',
@@ -53,8 +32,17 @@ export class CreateDeliveryDto {
 
   @IsString()
   @ApiProperty({
-    example: '1',
+    example: 'IRAMIREZ',
     description: 'USUARIO CREACION',
   })
   userCreated: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateDeliveryDetailsDto)
+  @ApiProperty({
+    type: [CreateDeliveryDetailsDto],
+    description: 'List of delivery details',
+  })
+  DeliveryDetails: CreateDeliveryDetailsDto[]
 }
