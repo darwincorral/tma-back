@@ -57,6 +57,7 @@ export class PersonasService {
 
   async findOne(findPersonasDto: FindPersonasDto) {
     try {
+      console.log(findPersonasDto)
       const resp = await this.personaRepository.findOneBy(findPersonasDto);
       return resp;
     } catch (error) {

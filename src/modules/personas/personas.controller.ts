@@ -89,7 +89,7 @@ export class PersonasController {
     }
   }
 
-  @Get('/findOne/:id')
+  @Post('/findOne/')
   @ApiOperation({
     summary: 'Busca un recurso ',
     description:
