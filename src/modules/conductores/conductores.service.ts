@@ -10,14 +10,37 @@ import { UpdateConductorDto } from './dto/update-conductor.dto';
 export class ConductoresService {
   constructor(
     @Inject('CONDUCTOR_REPOSITORY')
-    private personaRepository: Repository<Drivers>,
+    private conductorRepository: Repository<Drivers>,
   ) {}
 
   async create(createConductorDto: CreateConductorDto) {
     try {
-      const objTransporteDto =
-        await this.personaRepository.create(createConductorDto);
-      const resp = await this.personaRepository.save(objTransporteDto);
+      console.log(createConductorDto.identification)
+      // Verificar si ya existe un usuario con la misma identificación
+      const existingUser = await this.conductorRepository.findOne({
+        where: [
+          { identification: createConductorDto.identification },
+          { mail: createConductorDto.mail },
+        ],
+      });
+      console.log(existingUser)
+      if (existingUser) {
+        throw new HttpException(
+          {
+            message: 'Usuario ya registrado',
+            codRetorno: '0010',
+          },
+          203,
+          {
+            cause: new Error('test'),
+            description: 'test',
+          },
+        );
+      }
+
+      // Si no existe, proceder a crear el nuevo usuario
+      const objTransporteDto = this.conductorRepository.create(createConductorDto);
+      const resp = await this.conductorRepository.save(objTransporteDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -37,7 +60,7 @@ export class ConductoresService {
 
   async findAll(findConductorDto: FindConductorDto): Promise<Drivers[]> {
     try {
-      const resp = await this.personaRepository.findBy(findConductorDto);
+      const resp = await this.conductorRepository.findBy(findConductorDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -57,7 +80,7 @@ export class ConductoresService {
 
   async findOne(findConductorDto: FindConductorDto) {
     try {
-      const resp = await this.personaRepository.findOneBy(findConductorDto);
+      const resp = await this.conductorRepository.findOneBy(findConductorDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -77,7 +100,7 @@ export class ConductoresService {
 
   async update(id: number, updateConductorDto: UpdateConductorDto) {
     try {
-      const resp = await this.personaRepository.update(id, updateConductorDto);
+      const resp = await this.conductorRepository.update(id, updateConductorDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -97,12 +120,12 @@ export class ConductoresService {
 
   async remove(id: number, updateConductorDto: UpdateConductorDto) {
     try {
-      const respUpdate = await this.personaRepository.update(
+      const respUpdate = await this.conductorRepository.update(
         id,
         updateConductorDto,
       );
 
-      const resp = await this.personaRepository.softDelete(id);
+      const resp = await this.conductorRepository.softDelete(id);
 
       return resp;
     } catch (error) {

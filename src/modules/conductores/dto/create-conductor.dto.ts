@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNumber, IsString, MinLength } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateConductorDto {
   @IsString()
@@ -27,12 +27,14 @@ export class CreateConductorDto {
   })
   identification: string;
   @IsString()
+  @IsOptional()
   @ApiProperty({
     example: '2668417',
     description: ' TELEFONO ',
   })
   phone: string;
   @IsString()
+  @IsOptional()
   @ApiProperty({
     example: 'QUIMIAG Y MANGLARALTO',
     description: ' direccion ',
