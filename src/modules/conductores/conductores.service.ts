@@ -15,15 +15,15 @@ export class ConductoresService {
 
   async create(createConductorDto: CreateConductorDto) {
     try {
-      console.log(createConductorDto.identification)
       // Verificar si ya existe un usuario con la misma identificación
       const existingUser = await this.conductorRepository.findOne({
-        where: [
-          { identification: createConductorDto.identification },
-          { mail: createConductorDto.mail },
-        ],
+        where: 
+          { 
+           identification: createConductorDto.identification,
+           mail: createConductorDto.mail,
+           status:'ACT' 
+          }
       });
-      console.log(existingUser)
       if (existingUser) {
         throw new HttpException(
           {
@@ -78,9 +78,15 @@ export class ConductoresService {
     }
   }
 
-  async findOne(findConductorDto: FindConductorDto) {
+  async findOne(id: number) {
     try {
-      const resp = await this.conductorRepository.findOneBy(findConductorDto);
+      const resp = await this.conductorRepository.findOne({
+        where: { 
+          id:id, 
+          status:'ACT'
+        }, 
+        relations: ['vehicle'],         // Incluyendo los productos asociados
+      });
       return resp;
     } catch (error) {
       throw new HttpException(

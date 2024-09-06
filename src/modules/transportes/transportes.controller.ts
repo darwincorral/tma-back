@@ -107,7 +107,7 @@ export class TransportesController {
     }
   }
 
-  @Post('/findOne')
+  @Get('/findOne/:id')
   @ApiOperation({
     summary: 'Busca un recurso ',
     description:
@@ -120,10 +120,10 @@ export class TransportesController {
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() findTransporteDto: FindTransporteDto,
+    @Param('id') id: string,
   ) {
     try {
-      const resp = await this.transportesService.findOne(findTransporteDto);
+      const resp = await this.transportesService.findOne(+id);
       return successResponse(req, res, 200, 1, 1, 'exito', resp);
     } catch (error) {
       return errorResponse(
@@ -170,7 +170,7 @@ export class TransportesController {
       );
     }
   }
-  @Delete(':id')
+  @Delete(':id/:user')
   @ApiOperation({
     summary: 'elimina un recurso ',
     description:
@@ -184,12 +184,12 @@ export class TransportesController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('id') id: string,
-    @Body() updateTransporteDto: UpdateTransporteDto,
+    @Param('user') user: string,
   ) {
     try {
       const resp = await this.transportesService.remove(
         +id,
-        updateTransporteDto,
+        user,
       );
       return successResponse(req, res, 200, 0, 0, 'exito', resp);
     } catch (error) {

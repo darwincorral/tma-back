@@ -36,6 +36,12 @@ export class CreateDeliveryDetailsDto {
   rating: string;
   @IsString()
   @ApiProperty({
+    example: 'ACT',
+    description: 'ESTADO',
+  })
+  status: string;
+  @IsString()
+  @ApiProperty({
     example: 'IRAMIREZ',
     description: 'USUARIO CREACION',
   })

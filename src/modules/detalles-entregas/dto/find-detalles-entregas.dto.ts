@@ -28,4 +28,8 @@ export class FindDeliveryDetailsDto extends PartialType(
     description: 'ESTADO DE LA TABLA',
   })
   status?: string;
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({ example: 1, description: 'ID of the vehicle' })
+  vehicle: number;
 }

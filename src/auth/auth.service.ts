@@ -22,7 +22,10 @@ export class AuthService {
     // Buscar al usuario por correo electrónico
     try {
       const user = await this.peopleRepository.findOne({
-        where: { mail: email },
+        where: { 
+          mail: email, 
+          status:'ACT' 
+        },
       });
       // Verificar si el usuario existe y la contraseña es correcta
       if (user && user.password === password) {
@@ -61,7 +64,13 @@ export class AuthService {
     // Buscar al usuario por correo electrónico
     try {
       const user = await this.coductorRepository.findOne({
-        where: { mail: email },
+        where: { 
+          mail: email, 
+          status:'ACT' 
+        },
+        relations:[
+          'vehicle',
+        ]
       });
       // Verificar si el usuario existe y la contraseña es correcta
       if (user && user.password === password) {

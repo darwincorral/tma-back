@@ -1,10 +1,7 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateDeliveryDetailsDto } from './create-detalles-entregas.dto';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-export class UpdateDeliveryDetailsDto extends PartialType(
-  CreateDeliveryDetailsDto,
-) {
+export class UpdateDeliveryDetailsDto  {
   @IsNumber()
   @ApiProperty({
     example: 2,
@@ -24,4 +21,7 @@ export class UpdateDeliveryDetailsDto extends PartialType(
     description: 'ESTADO DE LA TABLA',
   })
   status?: string;
+  @IsNumber()
+  @ApiProperty({ example: 1, description: 'ID of the vehicle' })
+  vehicle: number;
 }

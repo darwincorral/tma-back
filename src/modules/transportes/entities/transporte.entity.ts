@@ -21,6 +21,8 @@ export class Vehicle {
   typeVehicle: string;
   @Column()
   capacity: number;
+  @Column({ default: 0 })
+  priority: number;
   @Column({ default: 'ACT' })
   status: string;
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })

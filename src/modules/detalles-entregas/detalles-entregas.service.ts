@@ -58,9 +58,27 @@ export class DeliveryDetailsService {
     findDeliveryDetailsDto: FindDeliveryDetailsDto,
   ): Promise<DeliveryDetails[]> {
     try {
-      const resp = await this.deliveryDetailsRepository.findBy(
-        findDeliveryDetailsDto,
-      );
+
+      const { vehicle, ...otherFilters } = findDeliveryDetailsDto;
+    
+      // Construye las condiciones de búsqueda
+      const conditions: any = { ...otherFilters };
+  
+      // Si el vehículo está presente en los filtros, asegúrate de filtrar por el ID del vehículo
+      if (vehicle) {
+        conditions.vehicle = { id: vehicle }; // Filtrar por el ID del vehículo
+      }
+
+      console.log(conditions)
+      const resp = await this.deliveryDetailsRepository.find({
+          where: conditions,
+          relations:[
+            'vehicle',
+            'route',
+            'people',
+            'product',
+          ]
+        });
       return resp;
     } catch (error) {
       throw new HttpException(

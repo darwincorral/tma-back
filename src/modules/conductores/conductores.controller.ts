@@ -117,10 +117,10 @@ export class ConductoresController {
   async findOne(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() findConductorDto: FindConductorDto,
+    @Param('id') id: string,
   ) {
     try {
-      const resp = await this.conductoresService.findOne(findConductorDto);
+      const resp = await this.conductoresService.findOne(+id);
       return successResponse(req, res, 200, 0, 0, 'exito', resp);
     } catch (error) {
       return errorResponse(

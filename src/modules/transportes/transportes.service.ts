@@ -19,28 +19,31 @@ export class TransportesService {
 
   async create(createTransporteDto: CreateTransporteDto) {
     try {
-      const respObjDrivers = await this.conductorRepository.findOneBy({
-        id: createTransporteDto.drivers,
+
+      // Verificar si ya existe un usuario con la misma identificación
+      const existingCar = await this.transporteRepository.findOne({
+        where: 
+          { 
+            plate: createTransporteDto.plate,
+            status:'ACT' 
+          }
       });
-      if (!respObjDrivers) {
+      if (existingCar) {
         throw new HttpException(
           {
-            message: ErrorMessage.dataNotFound.message,
-            codRetorno: ErrorMessage.dataNotFound.codRetorno,
+            message: 'Vehiculo ya registrado',
+            codRetorno: '0010',
           },
-          ErrorMessage.dataNotFound.status,
+          203,
           {
-            cause: new Error(ErrorMessage.dataNotFound.message),
-            description: ErrorMessage.dataNotFound.message,
+            cause: new Error('test'),
+            description: 'test',
           },
         );
       }
-      const objTransporteDto =
-        await this.transporteRepository.create(createTransporteDto);
-      const resp = await this.transporteRepository.save({
-        ...objTransporteDto,
-        respObjDrivers,
-      });
+
+      const objTransporteDto = await this.transporteRepository.create(createTransporteDto);
+      const resp = await this.transporteRepository.save(objTransporteDto);
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -78,9 +81,14 @@ export class TransportesService {
     }
   }
 
-  async findOne(findTransporteDto: FindTransporteDto) {
+  async findOne(id:number) {
     try {
-      const resp = await this.transporteRepository.findOneBy(findTransporteDto);
+      const resp = await this.transporteRepository.findOne({
+        where: { 
+          id:id, 
+          status:'ACT'
+        }
+      });
       return resp;
     } catch (error) {
       throw new HttpException(
@@ -121,13 +129,15 @@ export class TransportesService {
     }
   }
 
-  async remove(id: number, updateTransporteDto: UpdateTransporteDto) {
+  async remove(id: number, user:string) {
     try {
       const respUpdate = await this.transporteRepository.update(
         id,
-        updateTransporteDto,
+        {
+          userChange:user,
+          status:'INA'
+        },
       );
-
       const resp = await this.transporteRepository.softDelete(id);
 
       return resp;
