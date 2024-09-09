@@ -153,12 +153,12 @@ export class DeliveryDetailsController {
     @Req() req: Request,
     @Res() res: Response,
     @Param('id') id: string,
-    @Body() updateTransporteDto: UpdateDeliveryDetailsDto,
+    @Body() updateDeliveryDetailsDto: UpdateDeliveryDetailsDto,
   ) {
     try {
       const resp = await this.deliveryDetailsService.update(
         +id,
-        updateTransporteDto,
+        updateDeliveryDetailsDto,
       );
       return successResponse(req, res, 200, 0, 0, 'exito', resp);
     } catch (error) {

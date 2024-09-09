@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateDeliveryDetailsDto } from './create-detalles-entregas.dto';
 
@@ -24,7 +24,7 @@ export class FindDeliveryDetailsDto extends PartialType(
   @IsString()
   @IsOptional()
   @ApiProperty({
-    example: 'INA',
+    example: 'GEN',
     description: 'ESTADO DE LA TABLA',
   })
   status?: string;

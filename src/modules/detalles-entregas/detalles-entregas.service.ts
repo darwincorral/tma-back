@@ -59,7 +59,7 @@ export class DeliveryDetailsService {
   ): Promise<DeliveryDetails[]> {
     try {
 
-      const { vehicle, ...otherFilters } = findDeliveryDetailsDto;
+      const { vehicle, people, ...otherFilters } = findDeliveryDetailsDto;
     
       // Construye las condiciones de búsqueda
       const conditions: any = { ...otherFilters };
@@ -69,7 +69,11 @@ export class DeliveryDetailsService {
         conditions.vehicle = { id: vehicle }; // Filtrar por el ID del vehículo
       }
 
-      console.log(conditions)
+      // Si el vehículo está presente en los filtros, asegúrate de filtrar por el ID del vehículo
+      if (people) {
+        conditions.people = { id: people }; // Filtrar por el ID del vehículo
+      }
+      
       const resp = await this.deliveryDetailsRepository.find({
           where: conditions,
           relations:[

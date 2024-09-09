@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { CreateRouteDto } from 'src/modules/routes/dto/create-route.dto';
 
 export class UpdateDeliveryDetailsDto  {
   @IsNumber()
