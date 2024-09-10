@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateRouteDto {
   @IsString()
@@ -36,6 +36,7 @@ export class CreateRouteDto {
   })
   userCreated: string;
   @IsNumber()
+  @IsOptional()
   @IsNotEmpty()
   @ApiProperty({
     example: 1,

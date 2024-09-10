@@ -10,7 +10,12 @@ export class UpdateDeliveryDetailsDto  {
     description: ' identificador de tabla',
   })
   id?: number;
-
+  @IsString()
+  @ApiProperty({
+    example: '5',
+    description: ' RATING QUE ACTUALIZA ',
+  })
+  rating: string;
   @IsString()
   @ApiProperty({
     example: 'DARWIN NARVAEZ',
