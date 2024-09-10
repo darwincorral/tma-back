@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CreateRouteDto } from 'src/modules/routes/dto/create-route.dto';
 
 export class UpdateDeliveryDetailsDto  {
@@ -11,6 +11,7 @@ export class UpdateDeliveryDetailsDto  {
   })
   id?: number;
   @IsString()
+  @IsOptional()
   @ApiProperty({
     example: '5',
     description: ' RATING QUE ACTUALIZA ',
