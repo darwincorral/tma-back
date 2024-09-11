@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateDeliveryDetailsDto } from './create-detalles-entregas.dto';
+import { Type } from 'class-transformer';
 
 export class FindDeliveryDetailsDto extends PartialType(
   CreateDeliveryDetailsDto,
@@ -32,4 +33,14 @@ export class FindDeliveryDetailsDto extends PartialType(
   @IsNumber()
   @ApiProperty({ example: 1, description: 'ID of the vehicle' })
   vehicle: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: '2024-09-11',
+    description: 'Fecha de creación desde',
+    type: 'string',
+    format: 'date-time',
+  })
+  dateCreated?: string;
 }

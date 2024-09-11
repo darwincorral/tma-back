@@ -1,10 +1,11 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { DeliveryDetails } from './entities/detalles-entregas.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { CreateDeliveryDetailsDto } from './dto/create-detalles-entregas.dto';
 import { ErrorMessage } from 'src/configuration/error-messages';
 import { FindDeliveryDetailsDto } from './dto/find-detalles-entregas.dto';
 import { UpdateDeliveryDetailsDto } from './dto/update-detalles-entregas.dto';
+import * as moment from 'moment';
 
 @Injectable()
 export class DeliveryDetailsService {
@@ -72,6 +73,14 @@ export class DeliveryDetailsService {
       // Si el vehículo está presente en los filtros, asegúrate de filtrar por el ID del vehículo
       if (people) {
         conditions.people = { id: people }; // Filtrar por el ID del vehículo
+      }
+
+      // Filtra por la fecha, si se proporciona
+      if (otherFilters.dateCreated) {
+          const startOfDayUTC = moment(otherFilters.dateCreated).startOf('day').toDate();
+          const endOfDayUTC = moment(otherFilters.dateCreated).endOf('day').toDate();
+      
+          conditions.dateCreated = Between(startOfDayUTC, endOfDayUTC);
       }
       
       const resp = await this.deliveryDetailsRepository.find({
