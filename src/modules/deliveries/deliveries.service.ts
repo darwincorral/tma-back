@@ -7,6 +7,7 @@ import { ErrorMessage } from 'src/configuration/error-messages';
 import { FindDeliveryDto } from './dto/find-delivery.dto';
 import { DeliveryDetails } from '../detalles-entregas/entities/detalles-entregas.entity';
 import { Route } from '../routes/entities/route.entity';
+import { DeliveryGatewayGateway } from 'src/delivery-gateway/delivery-gateway.gateway';
 
 @Injectable()
 export class DeliveriesService {
@@ -19,6 +20,8 @@ export class DeliveriesService {
 
     @Inject('ROUTE_REPOSITORY')
     private routeRepository: Repository<Route>,
+
+    private readonly deliveryGateway: DeliveryGatewayGateway,
     
   ) {}
 
@@ -201,7 +204,23 @@ export class DeliveriesService {
 
       // Confirmar la transacción
       await queryRunner.commitTransaction();
-      return savedDelivery;
+
+      // Obtener el delivery completo con todas las relaciones
+      const fullDelivery = await this.deliveryRepository.findOne({
+        where: { id: savedDelivery.id },
+        relations: [
+          'deliveryDetails',
+          'deliveryDetails.vehicle',
+          'deliveryDetails.route',
+          'deliveryDetails.people',
+          'deliveryDetails.product',
+        ],
+      });
+
+      // Emitir evento de creación de entrega con el delivery completo
+      this.deliveryGateway.emitDeliveryCreated(fullDelivery);
+
+      return fullDelivery;
     } catch (error) {
       // Revertir la transacción en caso de error
       await queryRunner.rollbackTransaction();

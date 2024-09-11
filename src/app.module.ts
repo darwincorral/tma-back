@@ -5,6 +5,7 @@ import { ModulesModule } from './modules/modules.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import configuration from './configuration/configuration';
+import { DeliveryGatewayGateway } from './delivery-gateway/delivery-gateway.gateway';
 require('dotenv').config();
 
 @Module({
@@ -18,6 +19,6 @@ require('dotenv').config();
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DeliveryGatewayGateway],
 })
 export class AppModule {}
