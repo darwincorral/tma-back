@@ -6,12 +6,15 @@ import { ErrorMessage } from 'src/configuration/error-messages';
 import { FindDeliveryDetailsDto } from './dto/find-detalles-entregas.dto';
 import { UpdateDeliveryDetailsDto } from './dto/update-detalles-entregas.dto';
 import * as moment from 'moment';
+import { DeliveryGatewayGateway } from 'src/delivery-gateway/delivery-gateway.gateway';
 
 @Injectable()
 export class DeliveryDetailsService {
   constructor(
     @Inject('DETALLE_ENTREGA_REPOSITORY')
     private deliveryDetailsRepository: Repository<DeliveryDetails>,
+
+    private readonly deliveryGateway: DeliveryGatewayGateway,
   ) {}
 
   async create(createDeliveryDetailsDto: CreateDeliveryDetailsDto) {
@@ -55,59 +58,60 @@ export class DeliveryDetailsService {
     }
   }
 
-  async findAll(
-    findDeliveryDetailsDto: FindDeliveryDetailsDto,
-  ): Promise<DeliveryDetails[]> {
-    try {
+async findAll(
+  findDeliveryDetailsDto: FindDeliveryDetailsDto,
+): Promise<DeliveryDetails[]> {
+  try {
+    const { vehicle, people, ...otherFilters } = findDeliveryDetailsDto;
 
-      const { vehicle, people, ...otherFilters } = findDeliveryDetailsDto;
-    
-      // Construye las condiciones de búsqueda
-      const conditions: any = { ...otherFilters };
-  
-      // Si el vehículo está presente en los filtros, asegúrate de filtrar por el ID del vehículo
-      if (vehicle) {
-        conditions.vehicle = { id: vehicle }; // Filtrar por el ID del vehículo
-      }
+    // Construye las condiciones de búsqueda
+    const conditions: any = { ...otherFilters };
 
-      // Si el vehículo está presente en los filtros, asegúrate de filtrar por el ID del vehículo
-      if (people) {
-        conditions.people = { id: people }; // Filtrar por el ID del vehículo
-      }
-
-      // Filtra por la fecha, si se proporciona
-      if (otherFilters.dateCreated) {
-          const startOfDayUTC = moment(otherFilters.dateCreated).startOf('day').toDate();
-          const endOfDayUTC = moment(otherFilters.dateCreated).endOf('day').toDate();
-      
-          conditions.dateCreated = Between(startOfDayUTC, endOfDayUTC);
-      }
-      
-      const resp = await this.deliveryDetailsRepository.find({
-          where: conditions,
-          relations:[
-            'vehicle',
-            'route',
-            'people',
-            'product',
-          ]
-        });
-      return resp;
-    } catch (error) {
-      throw new HttpException(
-        {
-          message: error.response.message || ErrorMessage.ERROR_SERVICE.message,
-          codRetorno:
-            error.response.codRetorno || ErrorMessage.ERROR_SERVICE.codRetorno,
-        },
-        error.status || ErrorMessage.ERROR_SERVICE.status,
-        {
-          cause: new Error(error.options.cause || error),
-          description: error.options.description || error.message,
-        },
-      );
+    // Filtrar por vehículo si se proporciona
+    if (vehicle) {
+      conditions.vehicle = { id: vehicle };
     }
+
+    // Filtrar por persona si se proporciona
+    if (people) {
+      conditions.people = { id: people };
+    }
+
+    // Filtrar por fecha si se proporciona
+    if (otherFilters.dateCreated) {
+      const startOfDayUTC = moment(otherFilters.dateCreated).startOf('day').toDate();
+      const endOfDayUTC = moment(otherFilters.dateCreated).endOf('day').toDate();
+
+      conditions.dateCreated = Between(startOfDayUTC, endOfDayUTC);
+    }
+
+    // Utilizando QueryBuilder para filtrar las relaciones de route
+    const resp = await this.deliveryDetailsRepository
+      .createQueryBuilder('deliveryDetails')
+      .leftJoinAndSelect('deliveryDetails.vehicle', 'vehicle')
+      .leftJoinAndSelect('vehicle.drivers', 'drivers')
+      .leftJoinAndSelect('deliveryDetails.people', 'people')
+      .leftJoinAndSelect('deliveryDetails.product', 'product')
+      .leftJoinAndSelect('deliveryDetails.route', 'route', 'route.type != :type', { type: 'SEGUIMIENTO' }) // Filtra las rutas que no sean de tipo 'SEGUIMIENTO'
+      .where(conditions)
+      .orderBy('deliveryDetails.dateCreated', 'DESC')
+      .getMany();
+
+    return resp;
+  } catch (error) {
+    throw new HttpException(
+      {
+        message: error.response?.message || ErrorMessage.ERROR_SERVICE.message,
+        codRetorno: error.response?.codRetorno || ErrorMessage.ERROR_SERVICE.codRetorno,
+      },
+      error.status || ErrorMessage.ERROR_SERVICE.status,
+      {
+        cause: new Error(error.options?.cause || error),
+        description: error.options?.description || error.message,
+      },
+    );
   }
+}
 
   async findOne(findDeliveryDetailsDto: FindDeliveryDetailsDto) {
     try {
@@ -137,6 +141,10 @@ export class DeliveryDetailsService {
         id,
         updateDeliveryDetailsDto,
       );
+      
+      // Emitir evento de actualización con lista 
+      this.deliveryGateway.emitDeliveryUpdate(resp);
+
       return resp;
     } catch (error) {
       throw new HttpException(

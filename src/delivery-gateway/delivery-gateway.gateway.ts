@@ -26,4 +26,14 @@ export class DeliveryGatewayGateway implements OnGatewayInit, OnGatewayConnectio
   emitDeliveryCreated(delivery: any) {
     this.server.emit('deliveryCreated', delivery);
   }
+
+  // Método para emitir eventos
+  emitRouteLive(route: any) {
+    this.server.emit('routeLive', route);
+  }
+
+  // Método para emitir eventos
+  emitDeliveryUpdate(route: any) {
+    this.server.emit('deliveryUpdate', route);
+  }
 }

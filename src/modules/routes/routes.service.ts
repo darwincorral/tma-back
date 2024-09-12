@@ -5,23 +5,43 @@ import { Repository } from 'typeorm';
 import { Route } from './entities/route.entity';
 import { ErrorMessage } from 'src/configuration/error-messages';
 import { FindRouteDto } from './dto/find-route.dto';
+import { DeliveryGatewayGateway } from 'src/delivery-gateway/delivery-gateway.gateway';
+import { DeliveryDetails } from '../detalles-entregas/entities/detalles-entregas.entity';
 
 @Injectable()
 export class RoutesService {
   constructor(
     @Inject('ROUTES_REPOSITORY')
     private providersRepository: Repository<Route>,
+
+    private readonly deliveryGateway: DeliveryGatewayGateway,
+
+    @Inject('DELIVERY_DETAILS_REPOSITORY')
+    private deliveryDetailsRepository: Repository<DeliveryDetails>,
   ) {}
 
   async create(createRouteDto: CreateRouteDto) {
     try {
       const objTransporteDto =
         await this.providersRepository.create(createRouteDto);
-      const resp = await this.providersRepository.save({
+      const resp:any = await this.providersRepository.save({
         ...objTransporteDto,
         objTransporteDto,
       });
-      return resp;
+
+
+      // Obtener el DeliveryDetails completo con sus relaciones después de guardar la ruta
+      const deliveryDetails = await this.deliveryDetailsRepository.findOne({
+      where: { id: resp.deliveryDetails }, // Asegúrate de tener la relación con DeliveryDetails
+        relations: [
+          'route',
+        ],
+      });
+
+      // Emitir evento de creación de entrega con el delivery completo
+      this.deliveryGateway.emitRouteLive(deliveryDetails);
+
+      return deliveryDetails;
     } catch (error) {
       throw new HttpException(
         {
